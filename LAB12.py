@@ -1,33 +1,41 @@
 import streamlit as st
 import pandas as pd
 
-
 st.title("DSCI 510 - Lab #12 - CAR DATA")
 
-df = pd.read_csv('car_data.csv', sep=';')
+df = pd.read_csv('car_data.csv')  # Assuming CSV file is comma-separated
 
-st.dataframe(df.style.highlight_max(axis=0))
+# Function to apply filters and display filtered data
+def filter_data(df, car_name='', transmission=['Manual', 'Automatic'], price_range=(0.0, 20.0), year_range=(2000, 2024)):
+    filtered_df = df.copy()
+    
+    # Apply filters
+    if car_name:
+        filtered_df = filtered_df[filtered_df['Car_Name'].str.contains(car_name, case=False)]
+    filtered_df = filtered_df[filtered_df['Transmission'].isin(transmission)]
+    filtered_df = filtered_df[(filtered_df['Selling_Price'] >= price_range[0]) & (filtered_df['Selling_Price'] <= price_range[1])]
+    filtered_df = filtered_df[(filtered_df['Year'] >= year_range[0]) & (filtered_df['Year'] <= year_range[1])]
+    
+    return filtered_df
 
 with st.sidebar:
-    Car_Name = st.text_input('Car Name?', '')
+    # Sidebar options
+    car_name = st.text_input('Car Name', '')
+    transmission = st.multiselect('Manual and/or Automatic?', ['Manual', 'Automatic'], default=['Manual', 'Automatic'])
+    price_range = st.slider('Price Range', 0.0, 100.0, (0.0, 20.0))
+    year_range = st.slider('Year Range', 1990, 2024, (2000, 2024))
+    submit_button = st.button("Submit", type="primary")
+
+# If the submit button is clicked
+if submit_button:
+    # Filter the data
+    filtered_data = filter_data(df, car_name, transmission, price_range, year_range)
     
-    manual_auto = st.multiselect(
-    'Manual and/or Automatic?',
-    ['Manual', 'Automatic'],)
-    default=['Manual', 'Automatic']
-    st.write(f'Your current selection is:', manual_auto)
-    
-    price_range = st.slider(
-    'Price Range',
-    0.0, 100.0, (0.0, 20.0))
-    st.write('Selected:', price_range)
-    
-    year = st.slider(
-    'Price Range',
-    1990.0, 2024.0, (2000.0, 2024.0))
-    st.write('Selected:', year)
-    
-    st.button("Submit", type="primary")
+    # Display filtered data
+    st.dataframe(filtered_data)
+else:
+    # Display original data if no filters are selected
+    st.dataframe(df)
     
     
     
