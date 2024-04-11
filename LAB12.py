@@ -3,7 +3,7 @@ import pandas as pd
 
 st.title("DSCI 510 - Lab #12 - CAR DATA")
 
-df = pd.read_csv('car_data.csv')  # Assuming CSV file is comma-separated
+df = pd.read_csv('car_data.csv')
 
 # Function to apply filters and display filtered data
 def filter_data(df, car_name='', transmission=['Manual', 'Automatic'], price_range=(0.0, 20.0), year_range=(2000, 2024)):
@@ -30,11 +30,8 @@ with st.sidebar:
 if submit_button:
     # Filter the data
     filtered_data = filter_data(df, car_name, transmission, price_range, year_range)
-    
-    # Display filtered data
     st.dataframe(filtered_data)
 else:
-    # Display original data if no filters are selected
     st.dataframe(df)
     
     
